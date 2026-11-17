@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/busly_fundo"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <FrameLayout
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/bg_logo">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_bus" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/app_name"
+            android:textColor="@color/busly_primary"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            style="@style/Busly.Secundario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
+            android:text="@string/login_subtitulo"
+            android:textSize="14sp" />
+
+        <TextView
+            style="@style/Busly.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:text="@string/label_email" />
+
+        <EditText
+            android:id="@+id/etEmail"
+            style="@style/Busly.Campo"
+            android:autofillHints="emailAddress"
+            android:hint="@string/hint_email"
+            android:imeOptions="actionNext"
+            android:inputType="textEmailAddress" />
+
+        <TextView
+            style="@style/Busly.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_senha" />
+
+        <EditText
+            android:id="@+id/etSenha"
+            style="@style/Busly.Campo"
+            android:autofillHints="password"
+            android:hint="@string/hint_senha"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnEntrar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/bg_botao_primario"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/entrar"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvCadastro"
+            style="@style/Busly.Secundario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:padding="8dp"
+            android:text="@string/sem_conta"
+            android:textSize="13sp" />
+    </LinearLayout>
+</ScrollView>

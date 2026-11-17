@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Busly</string>
+
+    <!-- Login -->
+    <string name="login_subtitulo">Acompanhe o transporte escolar em tempo real</string>
+    <string name="label_email">E-mail</string>
+    <string name="label_senha">Senha</string>
+    <string name="hint_email">nome@email.com</string>
+    <string name="hint_senha">••••••••</string>
+    <string name="entrar">Entrar</string>
+    <string name="sem_conta">Ainda não tem conta? Cadastre-se</string>
+    <string name="cadastre_se">Cadastre-se</string>
+    <string name="cadastro_em_breve">Cadastro disponível em breve</string>
+    <string name="erro_email">Informe um e-mail válido</string>
+    <string name="erro_senha">A senha deve ter pelo menos 6 caracteres</string>
+
+    <!-- Navegação -->
+    <string name="nav_inicio">Início</string>
+    <string name="nav_alertas">Alertas</string>
+    <string name="nav_historico">Histórico</string>
+
+    <!-- Início -->
+    <string name="saudacao">Olá, %1$s</string>
+    <string name="rota_manha">Rota da manhã</string>
+    <string name="chegada_prevista">Chegada prevista</string>
+    <string name="status">Status</string>
+    <string name="proximo_ponto">Próximo ponto</string>
+    <string name="status_em_rota">Em rota</string>
+    <string name="status_chegou">Chegou</string>
+    <string name="descricao_mapa">Mapa com a rota e a posição atual do ônibus</string>
+    <string name="sair_titulo">Sair da conta</string>
+    <string name="sair_mensagem">Deseja realmente sair do Busly?</string>
+    <string name="sair">Sair</string>
+    <string name="cancelar">Cancelar</string>
+
+    <!-- Alertas e histórico -->
+    <string name="titulo_notificacoes">Notificações</string>
+    <string name="titulo_historico">Histórico de rotas</string>
+    <string name="subtitulo_historico">Últimos registros de embarque e desembarque</string>
+    <string name="embarque">Embarque</string>
+    <string name="desembarque">Desembarque</string>
+</resources>

@@ -9,14 +9,6 @@ Aplicativo Android em Java, criado a partir do banner do 6º Workshop de Educaç
 - **Histórico:** filtro por aluno e detalhes de cada viagem
 - **Perfil:** dados do responsável, avisos ligados ou desligados e sair
 
-## Como rodar
-1. Abra a pasta no Android Studio e aguarde o Gradle Sync.
-2. Execute em um emulador ou celular (Android 8.0 ou superior).
-
-Para entrar, use qualquer e-mail válido e uma senha com 6 ou mais caracteres.
-
-Sem o Android Studio, o GitHub gera o APK: abra a aba **Actions**, entre na última execução e baixe o arquivo em **Artifacts**.
-
 ## Observação
 Os dados são simulados, como no protótipo do banner.
 

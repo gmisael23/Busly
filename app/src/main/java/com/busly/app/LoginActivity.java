@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
+import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.LinkMovementMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.text.style.ClickableSpan;
 import android.util.Patterns;
 import android.view.View;
@@ -38,6 +40,12 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         binding.btnEntrar.setOnClickListener(v -> tentarLogin());
+        binding.cbMostrarSenha.setOnCheckedChangeListener((botao, marcado) -> {
+            binding.etSenha.setTransformationMethod(marcado
+                    ? HideReturnsTransformationMethod.getInstance()
+                    : PasswordTransformationMethod.getInstance());
+            binding.etSenha.setSelection(binding.etSenha.getText().length());
+        });
         configurarLinkCadastro();
     }
 
@@ -57,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         // Autenticação simulada. Futuramente: chamada ao backend.
-        Sessao.setLogado(this, true);
+        Sessao.entrar(this, email);
         abrirPrincipal();
     }
 

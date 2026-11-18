@@ -9,13 +9,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.busly.app.R;
 import com.busly.app.data.RepositorioMock;
 import com.busly.app.databinding.FragmentHistoryBinding;
+import com.busly.app.model.Aluno;
+import com.busly.app.model.RegistroViagem;
+import com.busly.app.util.Chips;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-/** Tela "Histórico": últimos registros de embarque e desembarque. */
+import java.util.List;
+
+/** Tela "Histórico": filtre por aluno e toque em um dia para ver os detalhes. */
 public class HistoryFragment extends Fragment {
 
     private FragmentHistoryBinding binding;
+    private HistoricoAdapter adapter;
+    private List<Aluno> alunos;
 
     @Nullable
     @Override
@@ -28,7 +37,36 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        binding.rvHistorico.setAdapter(new HistoricoAdapter(RepositorioMock.historico()));
+
+        alunos = RepositorioMock.alunos();
+        binding.tvFiltro1.setText(alunos.get(0).getRotulo());
+        binding.tvFiltro2.setText(alunos.get(1).getRotulo());
+        binding.tvFiltro1.setOnClickListener(v -> selecionar(0));
+        binding.tvFiltro2.setOnClickListener(v -> selecionar(1));
+
+        adapter = new HistoricoAdapter(
+                RepositorioMock.historico(alunos.get(0).getNome()), this::mostrarDetalhes);
+        binding.rvHistorico.setAdapter(adapter);
+        Chips.estilizar(binding.tvFiltro1, true);
+        Chips.estilizar(binding.tvFiltro2, false);
+    }
+
+    private void selecionar(int indice) {
+        Chips.estilizar(binding.tvFiltro1, indice == 0);
+        Chips.estilizar(binding.tvFiltro2, indice == 1);
+        adapter.atualizar(RepositorioMock.historico(alunos.get(indice).getNome()));
+    }
+
+    private void mostrarDetalhes(RegistroViagem registro) {
+        String mensagem = getString(R.string.detalhes_viagem,
+                registro.getHoraEmbarque(),
+                registro.getHoraDesembarque(),
+                registro.getDuracaoMinutos());
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(registro.getData())
+                .setMessage(mensagem)
+                .setPositiveButton(R.string.fechar, null)
+                .show();
     }
 
     @Override

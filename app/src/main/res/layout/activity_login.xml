@@ -77,6 +77,16 @@
             android:imeOptions="actionDone"
             android:inputType="textPassword" />
 
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/cbMostrarSenha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:buttonTint="@color/busly_primary"
+            android:text="@string/mostrar_senha"
+            android:textColor="@color/busly_texto_secundario"
+            android:textSize="13sp" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnEntrar"
             android:layout_width="match_parent"

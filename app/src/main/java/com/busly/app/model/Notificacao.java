@@ -7,14 +7,15 @@ public class Notificacao {
         PROXIMIDADE,
         EMBARQUE,
         DESEMBARQUE,
-        ATRASO
+        ATRASO,
+        AVISO
     }
 
     private final Tipo tipo;
     private final String titulo;
     private final String mensagem;
     private final String horario;
-    private final boolean naoLida;
+    private boolean naoLida;
 
     public Notificacao(Tipo tipo, String titulo, String mensagem, String horario, boolean naoLida) {
         this.tipo = tipo;
@@ -42,5 +43,9 @@ public class Notificacao {
 
     public boolean isNaoLida() {
         return naoLida;
+    }
+
+    public void setNaoLida(boolean naoLida) {
+        this.naoLida = naoLida;
     }
 }

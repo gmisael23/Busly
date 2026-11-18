@@ -1,26 +1,30 @@
 package com.busly.app.ui;
 
 import android.animation.ValueAnimator;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.busly.app.LoginActivity;
+import com.busly.app.MainActivity;
 import com.busly.app.R;
 import com.busly.app.data.RepositorioMock;
 import com.busly.app.databinding.FragmentHomeBinding;
 import com.busly.app.model.Aluno;
-import com.busly.app.util.Sessao;
+import com.busly.app.model.Notificacao;
+import com.busly.app.util.Chips;
+import com.busly.app.util.Configuracoes;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -37,11 +41,16 @@ public class HomeFragment extends Fragment {
     private static final float PROGRESSO_INICIAL = 0.45f;
     /** Duração da simulação, em milissegundos. */
     private static final long DURACAO_SIMULACAO_MS = 60_000L;
+    /** Minutos restantes para disparar o aviso de proximidade. */
+    private static final int MINUTOS_AVISO = 3;
 
     private FragmentHomeBinding binding;
     private List<Aluno> alunos;
+    private Aluno alunoAtual;
     private ValueAnimator animador;
     private int ultimoMinuto = -1;
+    private boolean avisouProximidade;
+    private boolean avisouChegada;
 
     @Nullable
     @Override
@@ -56,35 +65,85 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         alunos = RepositorioMock.alunos();
-        String responsavel = RepositorioMock.RESPONSAVEL;
 
-        binding.tvSaudacao.setText(getString(R.string.saudacao, responsavel));
+        binding.tvSaudacao.setText(getString(R.string.saudacao, RepositorioMock.RESPONSAVEL));
         binding.tvAvatar.setText(RepositorioMock.RESPONSAVEL_INICIAIS);
-        binding.tvAvatar.setOnClickListener(v -> confirmarSaida());
+        binding.tvAvatar.setOnClickListener(v -> ((MainActivity) requireActivity()).abrirPerfil());
 
         binding.tvAluno1.setText(alunos.get(0).getRotulo());
         binding.tvAluno2.setText(alunos.get(1).getRotulo());
         binding.tvAluno1.setOnClickListener(v -> selecionarAluno(0));
         binding.tvAluno2.setOnClickListener(v -> selecionarAluno(1));
 
+        binding.tvMotorista.setText(
+                RepositorioMock.MOTORISTA_NOME + " · " + RepositorioMock.MOTORISTA_ONIBUS);
+        binding.btnLigar.setOnClickListener(v -> ligarParaMotorista());
+        binding.btnAusencia.setOnClickListener(v -> confirmarAusencia());
+
         selecionarAluno(0);
     }
 
+    // ---------- Seleção de aluno ----------
+
     private void selecionarAluno(int indice) {
-        estilizarChip(binding.tvAluno1, indice == 0);
-        estilizarChip(binding.tvAluno2, indice == 1);
-        iniciarSimulacao(alunos.get(indice));
+        alunoAtual = alunos.get(indice);
+        Chips.estilizar(binding.tvAluno1, indice == 0);
+        Chips.estilizar(binding.tvAluno2, indice == 1);
+        atualizarBotaoAusencia();
+        iniciarSimulacao(alunoAtual);
     }
 
-    private void estilizarChip(TextView chip, boolean ativo) {
-        chip.setBackgroundResource(ativo ? R.drawable.bg_chip_ativo : R.drawable.bg_chip_inativo);
-        chip.setTextColor(ContextCompat.getColor(requireContext(),
-                ativo ? R.color.white : R.color.busly_primary));
+    // ---------- Ligar para o motorista ----------
+
+    private void ligarParaMotorista() {
+        // ACTION_DIAL só abre o discador com o número; não exige permissão.
+        Intent intent = new Intent(Intent.ACTION_DIAL,
+                Uri.parse("tel:" + RepositorioMock.MOTORISTA_TELEFONE));
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(requireContext(), R.string.ligar_indisponivel, Toast.LENGTH_SHORT).show();
+        }
     }
+
+    // ---------- Avisar ausência ----------
+
+    private void atualizarBotaoAusencia() {
+        boolean ausente = RepositorioMock.isAusente(alunoAtual.getNome());
+        binding.btnAusencia.setEnabled(!ausente);
+        binding.btnAusencia.setAlpha(ausente ? 0.6f : 1f);
+        binding.btnAusencia.setText(ausente
+                ? getString(R.string.ausencia_avisada, alunoAtual.getNome())
+                : getString(R.string.avisar_ausencia));
+    }
+
+    private void confirmarAusencia() {
+        Aluno aluno = alunoAtual;
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.ausencia_titulo)
+                .setMessage(getString(R.string.ausencia_confirmar, aluno.getNome()))
+                .setNegativeButton(R.string.cancelar, null)
+                .setPositiveButton(R.string.confirmar, (dialog, which) -> {
+                    RepositorioMock.registrarAusencia(aluno.getNome());
+                    RepositorioMock.adicionarNotificacao(new Notificacao(
+                            Notificacao.Tipo.AVISO, getString(R.string.ausencia_registrada),
+                            aluno.getNome() + " não irá à escola hoje.", "Agora", true));
+                    if (binding != null) {
+                        atualizarBotaoAusencia();
+                        atualizarBadge();
+                        mostrarAviso(getString(R.string.ausencia_registrada));
+                    }
+                })
+                .show();
+    }
+
+    // ---------- Simulação da rota ----------
 
     private void iniciarSimulacao(Aluno aluno) {
         cancelarSimulacao();
         ultimoMinuto = -1;
+        avisouProximidade = false;
+        avisouChegada = false;
 
         binding.tvStatus.setText(R.string.status_em_rota);
         binding.tvProximoPonto.setText(aluno.getProximoPonto());
@@ -104,6 +163,7 @@ public class HomeFragment extends Fragment {
             if (progresso >= 1f) {
                 binding.tvStatus.setText(R.string.status_chegou);
                 binding.tvEta.setText("0 min");
+                avisarChegada(aluno);
                 return;
             }
 
@@ -112,18 +172,55 @@ public class HomeFragment extends Fragment {
             if (minutos != ultimoMinuto) {
                 ultimoMinuto = minutos;
                 atualizarEta(minutos);
+                if (minutos <= MINUTOS_AVISO) {
+                    avisarProximidade(aluno, minutos);
+                }
             }
         });
         animador.start();
+    }
+
+    private void avisarProximidade(Aluno aluno, int minutos) {
+        if (avisouProximidade || RepositorioMock.isAusente(aluno.getNome())
+                || !Configuracoes.avisoProximidade(requireContext())) {
+            return;
+        }
+        avisouProximidade = true;
+        String mensagem = "Chega em " + minutos + " min no ponto " + aluno.getProximoPonto() + ".";
+        RepositorioMock.adicionarNotificacao(new Notificacao(
+                Notificacao.Tipo.PROXIMIDADE, "Ônibus se aproximando", mensagem, "Agora", true));
+        atualizarBadge();
+        mostrarAviso("Ônibus se aproximando: " + mensagem);
+    }
+
+    private void avisarChegada(Aluno aluno) {
+        if (avisouChegada || RepositorioMock.isAusente(aluno.getNome())
+                || !Configuracoes.avisoChegada(requireContext())) {
+            return;
+        }
+        avisouChegada = true;
+        String mensagem = aluno.getNome() + " chegou à escola às " + horaAtual() + ".";
+        RepositorioMock.adicionarNotificacao(new Notificacao(
+                Notificacao.Tipo.DESEMBARQUE, "Desembarque na escola", mensagem,
+                "Hoje, " + horaAtual(), true));
+        atualizarBadge();
+        mostrarAviso(mensagem);
     }
 
     /** Mostra "N min · HH:mm" com o horário previsto a partir de agora. */
     private void atualizarEta(int minutos) {
         Calendar previsao = Calendar.getInstance();
         previsao.add(Calendar.MINUTE, minutos);
-        String hora = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("pt-BR"))
-                .format(previsao.getTime());
-        binding.tvEta.setText(minutos + " min · " + hora);
+        binding.tvEta.setText(minutos + " min · " + formatarHora(previsao));
+    }
+
+    private String horaAtual() {
+        return formatarHora(Calendar.getInstance());
+    }
+
+    private String formatarHora(Calendar calendario) {
+        return new SimpleDateFormat("HH:mm", Locale.forLanguageTag("pt-BR"))
+                .format(calendario.getTime());
     }
 
     private void cancelarSimulacao() {
@@ -133,18 +230,20 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void confirmarSaida() {
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.sair_titulo)
-                .setMessage(R.string.sair_mensagem)
-                .setNegativeButton(R.string.cancelar, null)
-                .setPositiveButton(R.string.sair, (dialog, which) -> {
-                    Sessao.setLogado(requireContext(), false);
-                    Intent intent = new Intent(requireContext(), LoginActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                })
-                .show();
+    // ---------- Auxiliares ----------
+
+    private void atualizarBadge() {
+        ((MainActivity) requireActivity()).atualizarBadge();
+    }
+
+    /** Snackbar posicionado acima da barra de navegação. */
+    private void mostrarAviso(String texto) {
+        Snackbar snackbar = Snackbar.make(binding.getRoot(), texto, Snackbar.LENGTH_LONG);
+        View navegacao = requireActivity().findViewById(R.id.bottomNav);
+        if (navegacao != null) {
+            snackbar.setAnchorView(navegacao);
+        }
+        snackbar.show();
     }
 
     @Override

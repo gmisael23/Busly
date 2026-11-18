@@ -19,6 +19,7 @@
     <string name="nav_inicio">Início</string>
     <string name="nav_alertas">Alertas</string>
     <string name="nav_historico">Histórico</string>
+    <string name="nav_perfil">Perfil</string>
 
     <!-- Início -->
     <string name="saudacao">Olá, %1$s</string>
@@ -29,10 +30,6 @@
     <string name="status_em_rota">Em rota</string>
     <string name="status_chegou">Chegou</string>
     <string name="descricao_mapa">Mapa com a rota e a posição atual do ônibus</string>
-    <string name="sair_titulo">Sair da conta</string>
-    <string name="sair_mensagem">Deseja realmente sair do Busly?</string>
-    <string name="sair">Sair</string>
-    <string name="cancelar">Cancelar</string>
 
     <!-- Alertas e histórico -->
     <string name="titulo_notificacoes">Notificações</string>
@@ -40,4 +37,36 @@
     <string name="subtitulo_historico">Últimos registros de embarque e desembarque</string>
     <string name="embarque">Embarque</string>
     <string name="desembarque">Desembarque</string>
+
+    <!-- Login (novo) -->
+    <string name="mostrar_senha">Mostrar senha</string>
+
+    <!-- Início (novo) -->
+    <string name="motorista">Motorista</string>
+    <string name="ligar">Ligar</string>
+    <string name="ligar_indisponivel">Não foi possível abrir o discador</string>
+    <string name="avisar_ausencia">Avisar ausência de hoje</string>
+    <string name="ausencia_avisada">Ausência de %1$s avisada</string>
+    <string name="ausencia_titulo">Avisar ausência</string>
+    <string name="ausencia_confirmar">Confirmar que %1$s não irá à escola hoje? A ausência ficará registrada nos Alertas.</string>
+    <string name="ausencia_registrada">Ausência registrada</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="cancelar">Cancelar</string>
+
+    <!-- Alertas (novo) -->
+    <string name="marcar_todas">Marcar todas como lidas</string>
+
+    <!-- Histórico (novo) -->
+    <string name="detalhes_viagem">Embarque: %1$s\nDesembarque: %2$s\nDuração: %3$d min</string>
+    <string name="fechar">Fechar</string>
+
+    <!-- Perfil -->
+    <string name="titulo_perfil">Perfil</string>
+    <string name="secao_alunos">Alunos</string>
+    <string name="secao_avisos">Avisos</string>
+    <string name="aviso_proximidade">Avisar quando o ônibus estiver perto</string>
+    <string name="aviso_chegada">Avisar quando chegar à escola</string>
+    <string name="sair_titulo">Sair da conta</string>
+    <string name="sair_mensagem">Deseja realmente sair do Busly?</string>
+    <string name="sair">Sair</string>
 </resources>

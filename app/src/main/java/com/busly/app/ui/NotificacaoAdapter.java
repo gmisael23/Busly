@@ -14,10 +14,17 @@ import java.util.List;
 
 public class NotificacaoAdapter extends RecyclerView.Adapter<NotificacaoAdapter.ViewHolder> {
 
-    private final List<Notificacao> itens;
+    /** Chamado quando o usuário toca em uma notificação. */
+    public interface AoClicar {
+        void aoClicar(Notificacao notificacao, int posicao);
+    }
 
-    public NotificacaoAdapter(List<Notificacao> itens) {
+    private final List<Notificacao> itens;
+    private final AoClicar listener;
+
+    public NotificacaoAdapter(List<Notificacao> itens, AoClicar listener) {
         this.itens = itens;
+        this.listener = listener;
     }
 
     @NonNull
@@ -30,7 +37,14 @@ public class NotificacaoAdapter extends RecyclerView.Adapter<NotificacaoAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.vincular(itens.get(position));
+        Notificacao n = itens.get(position);
+        holder.vincular(n);
+        holder.itemView.setOnClickListener(v -> {
+            int pos = holder.getBindingAdapterPosition();
+            if (pos != RecyclerView.NO_POSITION) {
+                listener.aoClicar(itens.get(pos), pos);
+            }
+        });
     }
 
     @Override
@@ -65,6 +79,10 @@ public class NotificacaoAdapter extends RecyclerView.Adapter<NotificacaoAdapter.
                     break;
                 case DESEMBARQUE:
                     icone = "🚪";
+                    fundoIcone = R.drawable.bg_icon_menta;
+                    break;
+                case AVISO:
+                    icone = "📝";
                     fundoIcone = R.drawable.bg_icon_menta;
                     break;
                 case ATRASO:

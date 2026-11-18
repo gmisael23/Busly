@@ -24,4 +24,14 @@ public class RegistroViagem {
     public String getHoraDesembarque() {
         return horaDesembarque;
     }
+
+    /** Duração da viagem em minutos, calculada a partir de "HH:mm". */
+    public int getDuracaoMinutos() {
+        return paraMinutos(horaDesembarque) - paraMinutos(horaEmbarque);
+    }
+
+    private static int paraMinutos(String hora) {
+        String[] partes = hora.split(":");
+        return Integer.parseInt(partes[0]) * 60 + Integer.parseInt(partes[1]);
+    }
 }
